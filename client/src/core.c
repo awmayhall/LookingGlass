@@ -454,6 +454,11 @@ void core_requestGuestRes(void)
       !(g_state.transportFeatures & LG_TRANSPORT_FEATURE_WINDOW_SIZE))
     return;
 
+  // A window that already shows the guest at this scale has nothing to ask.
+  if (round(g_state.srcSize.x / g_state.windowScale) == g_state.windowW &&
+      round(g_state.srcSize.y / g_state.windowScale) == g_state.windowH)
+    return;
+
   LGMsg msg =
   {
     .type = LG_MSG_WINDOWSIZE,

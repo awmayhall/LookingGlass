@@ -1129,7 +1129,7 @@ static int renderThread(void * unused)
           !g_state.resizeDone &&
           g_state.resizeTimeout < now))
     {
-      if (g_params.autoResize)
+      if (g_params.autoResize && !g_params.setGuestRes)
       {
         g_state.ds->setWindowSize(
           g_state.dstRect.w,
@@ -4070,7 +4070,8 @@ restart:
     lgTransportFallback_clearPrimaryUUID(g_state.fallback);
   g_state.transportFeatures = session.features;
   frameScheduler_start(session.features);
-  core_requestGuestRes();
+  if (!g_params.autoResize)
+    core_requestGuestRes();
 
   void              * inputOpaque = NULL;
   const LG_InputOps * inputOps    = g_state.transport.ops->getInputOps ?
