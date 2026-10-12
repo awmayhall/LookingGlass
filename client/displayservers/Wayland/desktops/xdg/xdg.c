@@ -51,6 +51,7 @@ typedef struct XDGState
   bool fullscreen;
   bool floating;
   bool restoreFloatingSize;
+  bool resizing;
   bool resizable;
   int displayFd;
 }
@@ -97,6 +98,7 @@ static void xdgToplevelConfigure(void * data, struct xdg_toplevel * xdgToplevel,
 {
   state.fullscreen = false;
   state.floating   = true;
+  state.resizing   = false;
 
   enum xdg_toplevel_state * s;
   wl_array_for_each(s, states)
@@ -112,6 +114,10 @@ static void xdgToplevelConfigure(void * data, struct xdg_toplevel * xdgToplevel,
       case XDG_TOPLEVEL_STATE_TILED_TOP:
       case XDG_TOPLEVEL_STATE_TILED_BOTTOM:
         state.floating = false;
+        break;
+
+      case XDG_TOPLEVEL_STATE_RESIZING:
+        state.resizing = true;
         break;
 
       default:
@@ -347,6 +353,11 @@ bool xdg_configured(void)
   return state.configured;
 }
 
+bool xdg_resizing(void)
+{
+  return state.resizing;
+}
+
 WL_DesktopOps WLD_xdg =
 {
   .name                      = "xdg",
@@ -362,5 +373,6 @@ WL_DesktopOps WLD_xdg =
   .registryGlobalHandler     = xdg_registryGlobalHandler,
   .pollInit                  = xdg_pollInit,
   .pollWait                  = xdg_pollWait,
-  .configured                = xdg_configured
+  .configured                = xdg_configured,
+  .resizing                  = xdg_resizing
 };

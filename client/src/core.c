@@ -448,25 +448,28 @@ void core_onWindowSizeChanged(unsigned width, unsigned height)
     DEBUG_WARN("Window-size control failed with status %d", status);
 }
 
+void core_requestGuestRes(void)
+{
+  if (!g_params.setGuestRes ||
+      !(g_state.transportFeatures & LG_TRANSPORT_FEATURE_WINDOW_SIZE))
+    return;
+
+  LGMsg msg =
+  {
+    .type = LG_MSG_WINDOWSIZE,
+    .windowSize =
+    {
+      .width  = round(g_state.windowW * g_state.windowScale),
+      .height = round(g_state.windowH * g_state.windowScale)
+    }
+  };
+  lgMessage_post(&msg);
+}
+
 void core_updatePositionInfo(void)
 {
   g_cursor.motionValid = false;
   cancelExit("geometry");
-
-  if (g_params.setGuestRes &&
-      g_state.transportFeatures & LG_TRANSPORT_FEATURE_WINDOW_SIZE)
-  {
-    LGMsg msg =
-    {
-      .type = LG_MSG_WINDOWSIZE,
-      .windowSize =
-      {
-        .width  = round(g_state.windowW * g_state.windowScale),
-        .height = round(g_state.windowH * g_state.windowScale)
-      }
-    };
-    lgMessage_post(&msg);
-  }
 
   if (!g_state.haveSrcSize)
     goto done;

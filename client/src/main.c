@@ -4071,6 +4071,7 @@ restart:
     lgTransportFallback_clearPrimaryUUID(g_state.fallback);
   g_state.transportFeatures = session.features;
   frameScheduler_start(session.features);
+  core_requestGuestRes();
 
   void              * inputOpaque = NULL;
   const LG_InputOps * inputOps    = g_state.transport.ops->getInputOps ?

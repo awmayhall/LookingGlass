@@ -1197,10 +1197,10 @@ static int x11EventThread(void * unused)
         if (x11.fullscreen)
         {
           struct Border border = {0};
-          app_handleResizeEvent(x11.rect.w, x11.rect.h, 1, border);
+          app_handleResizeEvent(x11.rect.w, x11.rect.h, 1, border, false);
         }
         else
-          app_handleResizeEvent(x11.rect.w, x11.rect.h, 1, x11.border);
+          app_handleResizeEvent(x11.rect.w, x11.rect.h, 1, x11.border, false);
         break;
       }
 
@@ -1296,7 +1296,7 @@ static int x11EventThread(void * unused)
             x11.border.right  = cardinal[1];
             x11.border.top    = cardinal[2];
             x11.border.bottom = cardinal[3];
-            app_handleResizeEvent(x11.rect.w, x11.rect.h, 1, x11.border);
+            app_handleResizeEvent(x11.rect.w, x11.rect.h, 1, x11.border, false);
           }
 
           XFree(data);

@@ -316,6 +316,12 @@ bool libdecor_configured(void)
   return state.configured;
 }
 
+// libdecor does not report the resizing state
+bool libdecor_resizing(void)
+{
+  return false;
+}
+
 WL_DesktopOps WLD_libdecor =
 {
   .name                      = "libdecor",
@@ -331,5 +337,6 @@ WL_DesktopOps WLD_libdecor =
   .registryGlobalHandler     = libdecor_registryGlobalHandler,
   .pollInit                  = libdecor_pollInit,
   .pollWait                  = libdecor_pollWait,
-  .configured                = libdecor_configured
+  .configured                = libdecor_configured,
+  .resizing                  = libdecor_resizing
 };
