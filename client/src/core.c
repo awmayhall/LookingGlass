@@ -466,6 +466,19 @@ void core_requestGuestRes(void)
   lgMessage_post(&msg);
 }
 
+void core_resizeWindowToSource(int width, int height)
+{
+  if (!g_params.autoResize)
+    return;
+
+  const int w = round(width  / g_state.windowScale);
+  const int h = round(height / g_state.windowScale);
+  if (w == g_state.windowW && h == g_state.windowH)
+    return;
+
+  g_state.ds->setWindowSize(w, h);
+}
+
 void core_updatePositionInfo(void)
 {
   g_cursor.motionValid = false;

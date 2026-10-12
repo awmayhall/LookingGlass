@@ -1257,12 +1257,16 @@ static int x11EventThread(void * unused)
             break;
 
           bool fullscreen = false;
+          bool maximized  = false;
           bool focused    = false;
           for(unsigned long i = 0; i < num; ++i)
           {
             Atom prop = ((Atom *)data)[i];
             if (prop == x11atoms._NET_WM_STATE_FULLSCREEN)
               fullscreen = true;
+            else if (prop == x11atoms._NET_WM_STATE_MAXIMIZED_HORZ ||
+                     prop == x11atoms._NET_WM_STATE_MAXIMIZED_VERT)
+              maximized = true;
             else if (prop == x11atoms._NET_WM_STATE_FOCUSED)
               focused = true;
           }
@@ -1271,6 +1275,7 @@ static int x11EventThread(void * unused)
             setFocus(focused);
 
           x11.fullscreen = fullscreen;
+          x11.maximized  = maximized;
           XFree(data);
           break;
         }
@@ -2274,6 +2279,9 @@ static void x11Wait(unsigned int time)
 
 static void x11SetWindowSize(int w, int h)
 {
+  if (x11.fullscreen || x11.maximized)
+    return;
+
   XResizeWindow(x11.display, x11.window, w, h);
 }
 

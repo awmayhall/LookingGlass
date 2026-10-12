@@ -45,6 +45,7 @@ typedef struct LibDecorState
 
   int32_t width, height;
   int32_t floatingWidth, floatingHeight;
+  int32_t pendingWidth, pendingHeight;
   bool     needsResize;
   bool     fullscreen;
   bool     floating;
@@ -123,6 +124,20 @@ static void libdecorFrameConfigure(struct libdecor_frame * frame,
   {
     state.configured = true;
     return;
+  }
+
+  // A resize refused while maximized is applied once the window floats.
+  if (state.floating && state.pendingWidth)
+  {
+    state.width          = state.pendingWidth;
+    state.height         = state.pendingHeight;
+    state.floatingWidth  = state.width;
+    state.floatingHeight = state.height;
+    state.pendingWidth   = 0;
+
+    struct libdecor_state * s = libdecor_state_new(state.width, state.height);
+    libdecor_frame_commit(frame, s, NULL);
+    libdecor_state_free(s);
   }
 
   state.resizeSerial = configuration->serial;
@@ -248,8 +263,15 @@ static void libdecor_minimize(void)
 
 static void libdecor_shellResize(int w, int h)
 {
-  if (!libdecor_frame_is_floating(state.libdecorFrame))
+  if (state.fullscreen)
     return;
+
+  if (!state.floating)
+  {
+    state.pendingWidth  = w;
+    state.pendingHeight = h;
+    return;
+  }
 
   state.width          = w;
   state.height         = h;

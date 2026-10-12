@@ -35,6 +35,7 @@ bool core_warpPointer(int x, int y, bool exiting);
 void core_onWindowSizeChanged(unsigned width, unsigned height);
 void core_updatePositionInfo(void);
 void core_requestGuestRes(void);
+void core_resizeWindowToSource(int width, int height);
 void core_alignToGuest(void);
 bool core_isValidPointerPos(int x, int y);
 bool core_startVideoThreads(void);

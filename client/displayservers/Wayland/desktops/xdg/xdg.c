@@ -47,6 +47,7 @@ typedef struct XDGState
 
   int32_t width, height;
   int32_t floatingWidth, floatingHeight;
+  int32_t pendingWidth, pendingHeight;
   uint32_t resizeSerial;
   bool fullscreen;
   bool floating;
@@ -145,6 +146,18 @@ static void xdgToplevelConfigure(void * data, struct xdg_toplevel * xdgToplevel,
       state.floatingWidth  = width;
       state.floatingHeight = height;
     }
+  }
+
+  // A resize refused while maximized is applied once the window floats.
+  if (state.floating && state.pendingWidth)
+  {
+    state.width          = state.pendingWidth;
+    state.height         = state.pendingHeight;
+    state.floatingWidth  = state.width;
+    state.floatingHeight = state.height;
+    state.pendingWidth   = 0;
+    xdg_surface_set_window_geometry(
+        state.surface, 0, 0, state.width, state.height);
   }
 }
 
@@ -248,8 +261,15 @@ static void xdg_minimize(void)
 
 static void xdg_shellResize(int w, int h)
 {
-  if (!state.floating || !state.resizable)
+  if (state.fullscreen || !state.resizable)
     return;
+
+  if (!state.floating)
+  {
+    state.pendingWidth  = w;
+    state.pendingHeight = h;
+    return;
+  }
 
   state.width          = w;
   state.height         = h;

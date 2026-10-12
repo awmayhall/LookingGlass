@@ -1687,9 +1687,8 @@ int main_frameThread(void * unused)
     if (formatChanged)
     {
       LG_UNLOCK(g_state.lgrLock);
-      if (g_params.autoResize)
-        g_state.ds->setWindowSize(rendererFormat.frameWidth,
-            rendererFormat.frameHeight);
+      core_resizeWindowToSource(rendererFormat.frameWidth,
+          rendererFormat.frameHeight);
     }
 
     if (g_state.jitRender)
@@ -2314,8 +2313,8 @@ static void swSurfaceConfigure(LG_VideoSource source,
   atomic_store_explicit(&state->ready, true, memory_order_release);
   LG_UNLOCK(g_state.videoSourceLock);
 
-  if (source == LG_VIDEO_SOURCE_PRIMARY && g_params.autoResize)
-    g_state.ds->setWindowSize(width, height);
+  if (source == LG_VIDEO_SOURCE_PRIMARY)
+    core_resizeWindowToSource(width, height);
 
   app_refreshVideoSource();
 }
